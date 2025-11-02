@@ -1,18 +1,28 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from './pages/Dashboard';
 import GenerateImage from "./pages/GenerateImage";
+import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import './App.css'
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-gray-100 text-gray-900">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/generate-image" element={<GenerateImage />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <AuthProvider>
+
+      <BrowserRouter>
+        <div className="min-h-screen bg-gray-100 text-gray-900">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/generate-image" element={<GenerateImage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

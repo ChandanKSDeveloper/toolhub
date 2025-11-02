@@ -205,3 +205,66 @@ export const imageToPDF = async (req, res) => {
     });
   }
 };
+
+
+export const convertPdfToWord = async (req, res) => {
+  try {
+      const pdfFile = req.file;
+      const filePath = pdfFile.path;
+
+    if (!pdfFile) {
+      return res.status(400).json({ error: "No PDF provided" });
+    }
+
+      // Read PDF Buffer
+    const buffer = fs.readFileSync(pdfFile.path);
+
+    // Convert PDF → Word using mammoth
+    const result = await mammoth.convertToHtml({ buffer });
+
+    const wordHtml = result.value;
+    const outputPath = path.join("uploads", `converted_${Date.now()}.doc`);
+
+    fs.writeFileSync(outputPath, wordHtml);
+
+    res.download(outputPath, () => {
+      fs.unlinkSync(pdfFile.path);
+      fs.unlinkSync(outputPath);
+    });
+
+
+  } catch (error) {
+     console.error("PDF -> Word Error:", error);
+    res.status(500).json({ error: "Failed to convert PDF." });
+  } finally {
+    cleanupFile(filePath)
+  }
+}
+
+
+export const compressImage = async (req, res) => {
+  try {
+    const imageFile = req.file;
+
+    if (!imageFile) {
+      return res.status(400).json({ error: "No image provided" });
+    }
+
+    const outputPath = path.join("uploads", `compressed_${Date.now()}.jpg`);
+
+    await sharp(imageFile.path)
+      .jpeg({ quality: 60 })   // lower for more compression
+      .toFile(outputPath);
+
+    res.download(outputPath, () => {
+      fs.unlinkSync(imageFile.path);
+      fs.unlinkSync(outputPath);
+    });
+
+  } catch (error) {
+    console.error("Compress Image Error:", error);
+    res.status(500).json({ error: "Failed to compress image." });
+  } finally {
+    cleanupFile(imageFile.path)
+  }
+};
