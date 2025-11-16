@@ -4,6 +4,10 @@ import { corsMiddleware } from "./middleware/corsMiddleware.js";
 import ilovepdfRoutes from "./routes/ilovepdfRoutes.js";
 import cloudinaryRoutes from "./routes/cloudinaryRoutes.js";
 import imageGenerationRoute from "./routes/imageGenerationRoute.js";
+import connectDB from "./config/dbConfig.js"
+
+// import connectDB from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js";
 
 
 dotenv.config();
@@ -14,10 +18,13 @@ const port = process.env.PORT || 4000;
 app.use(express.json());
 app.use(corsMiddleware);
 
+connectDB();
+
 // Routes
 app.use("/api", ilovepdfRoutes);
 app.use("/api", cloudinaryRoutes);
 app.use("/api", imageGenerationRoute);
+app.use("/api/user", userRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

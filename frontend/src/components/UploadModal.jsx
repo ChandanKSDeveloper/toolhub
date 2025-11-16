@@ -4,6 +4,22 @@ const UploadModal = ({ feature, onClose }) => {
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // Save API call history in localStorage
+    const saveHistory = (action, fileNames) => {
+        const prev = JSON.parse(localStorage.getItem("apiHistory")) || [];
+
+        const newEntry = {
+            action,
+            fileNames,
+            time: new Date().toLocaleString(),
+        };
+
+        const updatedHistory = [newEntry, ...prev];
+
+        localStorage.setItem("apiHistory", JSON.stringify(updatedHistory));
+    };
+
+
     const handleUpload = async (e) => {
         e.preventDefault();
         if (files.length === 0) return alert("Please select at least one file!");
@@ -29,7 +45,12 @@ const UploadModal = ({ feature, onClose }) => {
                 endpoint: "api/upscale",
                 allowMultiple: false,
                 allowedFormats: ["jpg", "jpeg", "png", "webp"],
-            }
+            },
+            webp2png: {
+                endpoint: "api/convert_webp_to_png",
+                allowMultiple: false,
+                allowedFormats: ["jpg", "jpeg", "png", "webp"],
+            },
         };
 
         const config = featureMap[feature.type];
@@ -72,10 +93,10 @@ const UploadModal = ({ feature, onClose }) => {
                 feature.type === "merge"
                     ? "merged.pdf"
                     : feature.type === "compress"
-                    ? `compressed_${files[0].name}`
-                    : feature.type === "imagepdf"
-                    ? "converted.pdf"
-                    : `${files[0].name.split(".")[0]}_upscaled.jpg`;
+                        ? `compressed_${files[0].name}`
+                        : feature.type === "imagepdf"
+                            ? "converted.pdf"
+                            : `${files[0].name.split(".")[0]}_upscaled.jpg`;
 
             a.href = url;
             a.download = downloadName;
@@ -84,6 +105,25 @@ const UploadModal = ({ feature, onClose }) => {
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
+
+            // saveHistory(feature.name, files.map(f => f.name));
+
+            // Save to backend history
+            const token = localStorage.getItem("token");
+
+            await fetch("http://localhost:4000/api/user/history", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    operation: feature.type,
+                    files: files.map(f => f.name),
+                    details: `${feature.name} performed on ${files.length} files`,
+                }),
+            });
+
 
             onClose();
         } catch (error) {

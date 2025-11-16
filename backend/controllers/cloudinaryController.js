@@ -41,6 +41,43 @@ export const compressImage = async (req, res) => {
   }
 };
 
+export const convert_webp_to_png = async(req, res) => {
+  if(!req.file){
+    return res.status(400).json({error : "no webp image uploaded"})
+  }
+
+  const filePath = path.resolve(req.file.path);
+  
+  try {
+    const uploaded = await cloudinary.uploader.upload(filePath, {
+       resource_type: "image",
+    })
+
+    const imageUrl = cloudinary.url(uploaded.public_id, {
+      format : "png"
+    })
+
+     const response = await axios.get(imageUrl, {
+      responseType: "arraybuffer"
+    });
+    const buffer = Buffer.from(response.data, "binary");
+
+
+    // 3️⃣ Clean temp file
+    fs.unlinkSync(filePath);
+
+    res.setHeader("Content-Type", "image/jpeg");
+    res.setHeader("Content-Disposition", `attachment; filename="${originalName}_enhanced.jpg"`);
+    return res.send(buffer);
+  } catch (error) {
+      console.error("webp to png Error:", error);
+    return res.status(500).json({ error: "Image convert failed" });
+  } finally {
+      fs.unlinkSync(filePath);
+  }
+}
+
+
 // upscale image
 export const enhanceImage = async (req, res) => {
   if (!req.file) {

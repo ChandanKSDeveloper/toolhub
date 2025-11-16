@@ -51,6 +51,15 @@ const tools = [
     category: "ai",
     icon: aiGenIcon
   },
+  {
+    id: 6,
+    name: "Webp to Png",
+    desc: "Convert webp to png with simple click.",
+    route: "/convert_webp_to_png",
+    category: "image",
+    type: "webp2png",
+    icon: aiGenIcon
+  },
 ];
 
 const Dashboard = () => {
@@ -92,8 +101,8 @@ const Dashboard = () => {
               key={cat}
               onClick={() => setFilter(cat)}
               className={`px-5 py-2 rounded-full border transition-all ${filter === cat
-                  ? "bg-purple-600 border-purple-600 shadow-[0_0_10px_#a855f7]"
-                  : "border-gray-500 hover:border-purple-400 hover:text-purple-300"
+                  ? " bg-orange-400 border-orange-600 shadow-[0_0_10px_#ff751a]"
+                  : "border-orange-500 hover:border-orange-400 hover:text-orange-300"
                 }`}
             >
  {cat.toUpperCase()}
