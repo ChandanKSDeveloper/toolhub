@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 
 const historySchema = new mongoose.Schema({
     operation: { type: String, required: true },
-    fileName: { type: String },
-    fileSize: { type: Number },
+    fileName: { type: [String] },
+    fileSize: { type: [Number] },
     uploadDate: { type: Date, default: Date.now },
     details: { type: Object }
 });

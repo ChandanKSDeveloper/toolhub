@@ -1,5 +1,10 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import cloudinary from "../utils/cloudinaryClient.js";
+import { cleanupFile } from "../utils/helper.js";
+import path from "path";
+import fs from "fs";
+import bcrypt from "bcryptjs";
 
 // Generate JWT
 const generateToken = (id) => {
@@ -80,10 +85,12 @@ export const loginUser = async (req, res) => {
 
     if (!user) return res.status(400).json({ message: "Invalid credentials (email not found)" });
 
-    const isMatched = await user.matchPassword(password);
-    console.log("MATCH RESULT:", isMatched);
+   const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid password" });
+    console.log("MATCH RESULT:", isMatch);
 
-    if (!isMatched)
+    if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials (wrong password)" });
 
 
@@ -112,12 +119,54 @@ export const loginUser = async (req, res) => {
 // UPDATE AVATAR
 export const updateAvatar = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    user.avatar = req.file.path; // saved by multer
-    await user.save();
+    console.log("avatar image controller");
+    if (!req.file) return res.status(400).json({ error: "avatar image is missing" })
 
-    res.status(200).json({ message: "Avatar updated", avatar: user.avatar });
+    const filePath = path.resolve(req.file.path)
+    const allowed = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"];
+    const originalName = req.file.originalname
+    const ext = path.extname(originalName).toLowerCase();
+    if (!allowed.includes(ext)) {
+      cleanupFile(filePath);
+      return res.status(400).json({ error: "Only image files are supported." })
+    }
+
+    console.log("uploading image on cloudinary");
+
+    const uploadedAvatar = await cloudinary.uploader.upload(filePath, {
+      resource_type: "image"
+    })
+
+    if (!uploadedAvatar) {
+      cleanupFile(filePath)
+      return res.status(500).json({ error: "failed to upload on cloudinary" });
+    }
+
+
+    console.log("image uploaded cloudinary");
+
+
+    console.log("searching user to upload");
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: {
+          avatar: uploadedAvatar.secure_url
+        }
+      }, {
+      new: true
+    }
+    ).select("-password")
+
+
+    console.log("user found and avatar updated");
+    cleanupFile(filePath);
+    return res.status(200).json({ user: updatedUser, message: "avatar image uploaded", avatar: uploadedAvatar.secure_url, })
+
+
+
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -125,12 +174,59 @@ export const updateAvatar = async (req, res) => {
 // UPDATE COVER IMAGE
 export const updateCover = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    user.coverImage = req.file.path;
-    await user.save();
 
-    res.status(200).json({ message: "Cover image updated", coverImage: user.coverImage });
+    console.log("cover image uploading");
+
+    if (!req.file) return res.status(400).json({ error: "cover image is missing" })
+    console.log("image mil gaya");
+    const filePath = path.resolve(req.file.path);
+    const allowed = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"];
+
+    const originalName = req.file.originalname;
+    const ext = path.extname(originalName).toLowerCase();
+    if (!allowed.includes(ext)) {
+      cleanupFile(filePath);
+      return res.status(400).json({ error: "Only image files are supported." })
+    }
+    console.log("cover image uploading on cloudinary");
+
+    const uploaded = await cloudinary.uploader.upload(filePath, {
+      resource_type: "image",
+    })
+
+    if (!uploaded) {
+      return res.status(500).json({ error: "failed to upload on cloudinary" });
+    }
+
+    console.log("image upload ho gaya");
+
+    console.log("searching user");
+    const user = await User.findById(req.user?._id).select("coverImage");
+
+    if (!user) {
+      return res.status(404).json({ error: "no user found" });
+    }
+
+    console.log("user mil gaya");
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: {
+          coverImage: uploaded.secure_url
+        }
+      },
+      { new: true }
+    ).select("-password")
+
+    console.log("cover image set ho gaya user me");
+    cleanupFile(filePath);
+    return res.status(200).json({ user: updatedUser, message: "cover image uploaded", coverImage: uploaded.secure_url, })
+
+
+
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };

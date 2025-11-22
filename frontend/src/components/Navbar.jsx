@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiMenu, FiX, FiLogIn, FiUser, FiLogOut } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AboutPage from "../pages/AboutPage";
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,7 +29,7 @@ const Navbar = () => {
         </button>
 
         {/* Logo */}
-        <Link to="/" className="text-xl font-semibold select-none cursor-pointer">
+        <Link to="/" className="text-3xl font-bold select-none cursor-pointer">
           Tool
           <span className="bg-orange-400 text-black px-2 py-1 rounded ml-1">
             hub
@@ -36,9 +37,10 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex items-center gap-8 text-sm">
-          <li><Link to="/" className="hover:text-orange-400 transition">Home</Link></li>
+        <ul className="hidden md:flex items-center gap-8 font-bold text-2xl">
+          <li><Link to="/" className="hover:text-orange-400  transition">Home</Link></li>
           <li><Link to="/generate-image" className="hover:text-orange-400 transition">Generate Image</Link></li>
+          <li><Link to="/about" className="hover:text-orange-400 transition">About</Link></li>
         </ul>
 
         {/* Auth Section (Desktop) */}
@@ -93,6 +95,7 @@ const Navbar = () => {
         <ul className="mt-4 space-y-4 px-4 text-lg">
           <li><Link to="/" onClick={() => setSidebarOpen(false)} className="hover:text-orange-400">Home</Link></li>
           <li><Link to="/generate-image" onClick={() => setSidebarOpen(false)} className="hover:text-orange-400">Generate Image</Link></li>
+          <li><Link to="/about" onClick={() => setSidebarOpen(false)} className="hover:text-orange-400">About</Link></li>
 
           {user ? (
             <>
