@@ -3,24 +3,34 @@ import React from "react";
 const testimonials = [
   {
     id: 1,
-    name: "Aarav Sharma",
-    image: "https://i.pravatar.cc/150?img=32",
+    // name: "Aarav Sharma",
+    name: "Janni Shuddh Sanskari",
+    // image: "https://i.pravatar.cc/150?img=32",
+    image: "./js.jpg",
+    // review:
+    //   "ToolHub made PDF merging and image conversion insanely simple. Everything loads fast and works perfectly!",
     review:
-      "ToolHub made PDF merging and image conversion insanely simple. Everything loads fast and works perfectly!",
+      "ToolHub makes PDF merging and image conversion ridiculously easy. Everything loads fast, runs smoothly, and hits all the right spots—just like I do!",
   },
   {
     id: 2,
-    name: "Sanya Mehra",
-    image: "https://i.pravatar.cc/150?img=47",
+    name: "Nikhil",
+    // image: "https://i.pravatar.cc/150?img=47",
+    image: "./ni.jpg",
+    // review:
+    //   "The UI feels clean and modern. The image-to-PDF tool has become a part of my daily workflow.",
     review:
-      "The UI feels clean and modern. The image-to-PDF tool has become a part of my daily workflow.",
+      "The UI’s sleek and modern, and that image-to-PDF tool? It's become a daily must-have in my routine. Smooth, fast, and always gets the job done—just the way I like it.",
   },
   {
     id: 3,
-    name: "Rohit Gupta",
-    image: "https://i.pravatar.cc/150?img=12",
+    name: "Savita",
+    // image: "https://i.pravatar.cc/150?img=12",
+    image: "sb.jpg",
+    // review:
+    //   "Super smooth experience. The tools work better than most paid apps. Highly recommended!",
     review:
-      "Super smooth experience. The tools work better than most paid apps. Highly recommended!",
+      "Super smooth experience—these tools work better than most paid apps. I’m hooked. You’ll be too. Highly recommended, if you know what I mean!",
   },
 ];
 

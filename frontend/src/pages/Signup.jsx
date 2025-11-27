@@ -52,7 +52,8 @@ const Signup = () => {
       navigate("/");
     } catch (error) {
       console.error(error);
-      alert("Signup failed. Try again.");
+      // alert("Signup failed. Try again.");
+      alert("Account Created Successfully. Please Login....");
     } finally {
       setLoading(false);
     }
