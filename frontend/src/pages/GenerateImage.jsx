@@ -27,8 +27,10 @@ const GenerateImage = () => {
     } catch (err) {
       console.error(err);
       alert("Error generating image.");
+    } finally  {
+
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const downloadImage = () => {
