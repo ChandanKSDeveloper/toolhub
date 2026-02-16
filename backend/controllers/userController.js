@@ -11,29 +11,6 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// REGISTER
-// export const registerUser = async (req, res) => {
-
-//   console.log("register user is called ");
-
-//   try {
-//     const { username, email, password } = req.body;
-
-//     const exists = await User.findOne({ email });
-//     if (exists) return res.status(400).json({ message: "Email already exists" });
-
-//     const user = await User.create({ username, email, password });
-
-//     res.status(200).json({
-//       message: "User registered",
-//       token: generateToken(user._id),
-//       user,
-//     });
-
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
 
 export const registerUser = async (req, res) => {
   try {
@@ -252,12 +229,6 @@ export const addHistory = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// FETCH PROFILE
-// export const getProfile = async (req, res) => {
-//   const user = await User.findById(req.user.id);
-//   res.status(200).json(user);
-// };
 
 
 export const getHistory = async (req, res) => {

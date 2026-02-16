@@ -63,7 +63,6 @@ export const convert_webp_to_png = async(req, res) => {
     const buffer = Buffer.from(response.data, "binary");
 
 
-    // 3️⃣ Clean temp file
     fs.unlinkSync(filePath);
 
     res.setHeader("Content-Type", "image/jpeg");
@@ -88,13 +87,11 @@ export const enhanceImage = async (req, res) => {
   const originalName = req.file.originalname.replace(/\.[^.]+$/, "");
   try {
 
-    // 1️⃣ Upload original image to Cloudinary server first
     const uploaded = await cloudinary.uploader.upload(filePath, {
       folder: "image-enhanced",
       resource_type: "image"
     })
 
-    // 2️⃣ Apply Cloudinary AI Enhancements & Upscale
     const enhancedUrl = cloudinary.url(uploaded.public_id, {
       transformation: [
         { quality: "auto:best" },     // best quality Cloudinary allows
@@ -113,7 +110,6 @@ export const enhanceImage = async (req, res) => {
     const buffer = Buffer.from(response.data, "binary");
 
 
-    // 3️⃣ Clean temp file
     fs.unlinkSync(filePath);
 
     res.setHeader("Content-Type", "image/jpeg");

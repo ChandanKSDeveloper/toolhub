@@ -38,7 +38,7 @@ export const compressPDF = async (req, res) => {
   }
 
   try {
-    // 1️⃣ Upload to Cloudinary
+   
     console.log("Uploading file to Cloudinary...");
     const cloudRes = await cloudinary.uploader.upload(filePath, {
       resource_type: "auto",
@@ -48,24 +48,21 @@ export const compressPDF = async (req, res) => {
     const cloudinaryUrl = cloudRes.secure_url;
     console.log("Uploaded to Cloudinary:", cloudinaryUrl);
 
-    // 2️⃣ Compress with iLovePDF
     console.log("iLovePDF starting");
     const task = ilovepdf.newTask("compress");
     await task.start();
     console.log("iLovePDF task started");
 
-    // 3️⃣ Add file via Cloudinary URL
     await task.addFile(cloudinaryUrl);
     console.log("File added to iLovePDF task via URL");
-    // 4️⃣ Process compression
+   
     await task.process({ compression_level: "recommended" });
     console.log("Compression completed");
 
-    // 5️⃣ Download result
+   
     const data = await task.download();
     console.log("Downloaded compressed file, size:", data.length, "bytes");
 
-    // 6️⃣ Send file to frontend
     const outputFileName = `compressed_${originalName}`;
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${outputFileName}"`);
